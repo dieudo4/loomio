@@ -3,31 +3,24 @@ angular.module('loomioApp').controller 'DashboardPageController', ($rootScope, R
   $rootScope.$broadcast('setTitle', 'Dashboard')
 
   @loaded = {}
-  @perPage =
-    sort_by_date: 25
-    sort_by_group: 10
+  @perPage = 25
 
-  @sort   = -> CurrentUser.dashboardSort
   @filter = -> CurrentUser.dashboardFilter
 
   @loadedCount = =>
-    @loaded[@sort()] = @loaded[@sort()] or {}
-    @loaded[@sort()][@filter()] = @loaded[@sort()][@filter()] or 0
+    @loaded[@filter()] = @loaded[@filter()] or 0
 
   @updateLoadedCount = =>
     current = @loadedCount()
-    @loaded[@sort()][@filter()] = current + @perPage[@sort()]
+    @loaded[@filter()] = current + @perPage
 
   @loadParams = ->
     filter: @filter()
-    per:    @perPage[@sort()]
+    per:    @perPage
     from:   @loadedCount()
 
-  @loadMore = (options = {}) =>
-    @updateLoadedCount()
-    switch @sort()
-      when 'sort_by_date'  then Records.discussions.fetchInboxByDate(@loadParams())
-      when 'sort_by_group' then Records.discussions.fetchInboxByGroup(@loadParams())
+  @loadMore = =>
+    Records.discussions.fetchInboxByDate(@loadParams()).then @updateLoadedCount
   LoadingService.applyLoadingFunction @, 'loadMore'
 
   @changePreferences = (options = {}) =>
@@ -55,6 +48,9 @@ angular.module('loomioApp').controller 'DashboardPageController', ($rootScope, R
       discussion.lastInboxActivity()
                 .isBetween(today.clone().subtract(options['fromCount'] or 1, options['from']),
                            today.clone().subtract(options['toCount'] or 1, options['to']))
+
+  inTimeframe = (fn) ->
+    => @loadedCount() > 0 and _.find @dashboardDiscussions(), (discussion) => fn(discussion)
 
   @today     = timeframe(from: 'second', toCount: -10, to: 'year')
   @yesterday = timeframe(from: 'day', to: 'second')

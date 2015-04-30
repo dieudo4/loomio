@@ -8,8 +8,8 @@ angular.module('loomioApp').factory 'DiscussionReaderRecordsInterface', (BaseRec
 
     forDashboard: (options = {}) -> 
       relation = @collection.chain()
-      relation = relation.find({ volume: { $ne: 'mute'} })                           if options['muted']
-      relation = relation.find({ volume: { $eq: 'mute'} })                           unless options['muted']
+      relation = relation.find({ volume: { $eq: 'mute'} })                           if options['muted']
+      relation = relation.find({ volume: { $ne: 'mute'} })                           unless options['muted']
       relation = relation.where((reader) -> reader.discussion().hasActiveProposal()) if options['proposals']
       relation = relation.where((reader) -> reader.discussion().isUnread())          if options['unread']
       relation
