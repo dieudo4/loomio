@@ -20,7 +20,7 @@ angular.module('loomioApp').controller 'DashboardPageController', ($rootScope, R
     from:   @loadedCount()
 
   @loadMore = =>
-    Records.discussions.fetchInboxByDate(@loadParams()).then @updateLoadedCount
+    Records.discussions.fetchDashboard(@loadParams()).then @updateLoadedCount
   LoadingService.applyLoadingFunction @, 'loadMore'
 
   @changePreferences = (options = {}) =>
@@ -33,10 +33,10 @@ angular.module('loomioApp').controller 'DashboardPageController', ($rootScope, R
     unread:    @filter() == 'show_unread'
     proposals: @filter() == 'show_proposals'
 
-  @dashboardDiscussionReaders = =>
+  @dashboardDiscussionReaders = ->
     _.pluck Records.discussionReaders.forDashboard(@dashboardOptions()).data(), 'id'
 
-  @dashboardDiscussions = =>
+  @dashboardDiscussions = ->
     Records.discussions.findByDiscussionIds(@dashboardDiscussionReaders())
                        .simplesort('lastActivityAt', true)
                        .limit(@loadedCount())

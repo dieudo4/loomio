@@ -2,19 +2,13 @@ class API::DiscussionsController < API::RestfulController
   load_and_authorize_resource only: [:show, :mark_as_read, :set_volume]
   load_resource only: [:create, :update]
 
-  def inbox_by_date
-    load_and_authorize_group if params[:group_id]
+  def discussions_for_dashboard
     @discussions = page_collection inbox_threads
     respond_with_discussions
   end
 
-  def inbox_by_organization
+  def discussions_for_inbox
     @discussions = grouped inbox_threads.group_by(&:organization_id)
-    respond_with_discussions
-  end
-
-  def inbox_by_group
-    @discussions = grouped inbox_threads.group_by(&:group_id)
     respond_with_discussions
   end
 
