@@ -1,4 +1,4 @@
-.thread-item--inner{ng_controller: 'NewCommentItemController'}
+.thread-item.thread-item--comment{ng_controller: 'NewCommentItemController'}
   .sr-only{aria-label: "{{ 'activity_card.new_comment.aria_label' | translate }} {{ ::comment.authorName() }}", role: 'heading'}
   .thread-item-context-menu.dropdown.pull-right{ng-if: 'showContextMenu()'}
     %button.btn.btn-nude.dropdown-toggle{href:''}
@@ -15,8 +15,8 @@
     .media-left
       %user_avatar{user: "comment.author()", aria-hidden: 'true'}
     .media-body
-      %span{ng-show: 'comment.parentId', translate: 'new_comment_item.in_reply_to', translate-values: '{author: comment.authorName(), recipient: comment.parentAuthorName()}'}
-      %span{ng-hide: 'comment.parentId'}
+      %span{ng-if: 'comment.parentId', translate: 'new_comment_item.in_reply_to', translate-values: '{author: comment.authorName(), recipient: comment.parentAuthorName()}'}
+      %span{ng-if: '!comment.parentId'}
         %strong{aria-hidden:'true'} {{ ::comment.authorName() }}
 
   .thread-item-body{btf-markdown: 'comment.body' }
@@ -27,8 +27,8 @@
 
   .thread-item-footer
     .thread-actions-and-meta
-      %a{translate: 'common.action.like', ng-show: '!currentUserLikesIt()', href: '#', ng_click: 'like()'}>
-      %a{translate: 'common.action.unlike', href: '#', ng_click: 'unlike()', ng-show: 'currentUserLikesIt()'}>
+      %a{href: '#', translate: 'common.action.like', ng-show: '!currentUserLikesIt()', ng_click: 'like()'}>
+      %a{href: '#', translate: 'common.action.unlike', ng_click: 'unlike()', ng-show: 'currentUserLikesIt()'}>
       %span{aria-hidden: 'true'}·
       %a{translate: 'common.action.reply', href: '#', ng_click: 'reply()'}>
       %span{aria-hidden: 'true'}·

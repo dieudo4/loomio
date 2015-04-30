@@ -35,22 +35,19 @@ angular.module('loomioApp').controller 'DashboardPageController', ($rootScope, R
     CurrentUser.save()
     @loadMore() if @loadedCount() == 0
 
-  @dashboardOptions = (group = {}) =>
-    unmuted:   true
+  @dashboardOptions = =>
+    muted:     @filter() == 'show_muted'
     unread:    @filter() == 'show_unread'
     proposals: @filter() == 'show_proposals'
-    groupId:   group.id
 
-  @dashboardDiscussionReaders = (group) =>
-    _.pluck Records.discussionReaders.forDashboard(@dashboardOptions(group)).data(), 'id'
+  @dashboardDiscussionReaders = =>
+    _.pluck Records.discussionReaders.forDashboard(@dashboardOptions()).data(), 'id'
 
-  @dashboardDiscussions = (group) =>
-    Records.discussions.findByDiscussionIds(@dashboardDiscussionReaders(group))
+  @dashboardDiscussions = =>
+    Records.discussions.findByDiscussionIds(@dashboardDiscussionReaders())
                        .simplesort('lastActivityAt', true)
+                       .limit(@loadedCount())
                        .data()
-
-  @dashboardGroups = ->
-    _.filter CurrentUser.groups(), (group) -> group.isParent()
 
   timeframe = (options = {}) ->
     today = moment().startOf 'day'
@@ -65,7 +62,11 @@ angular.module('loomioApp').controller 'DashboardPageController', ($rootScope, R
   @thisMonth = timeframe(from: 'month', to: 'week')
   @older     = timeframe(fromCount: 3, from: 'month', to: 'month')
 
-  @groupName = (group) -> group.name
+  @anyToday     = inTimeframe(@today)
+  @anyYesterday = inTimeframe(@yesterday)
+  @anyThisWeek  = inTimeframe(@thisWeek)
+  @anyThisMonth = inTimeframe(@thisMonth)
+  @anyOlder     = inTimeframe(@older)
 
   Records.votes.fetchMyRecentVotes()
   @loadMore()

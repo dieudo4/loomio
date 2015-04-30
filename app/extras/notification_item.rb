@@ -1,6 +1,4 @@
 class NotificationItem
-  include Routing
-
   attr_accessor :item, :notification
 
   def initialize(notification)
@@ -38,11 +36,15 @@ class NotificationItem
   end
 
   def actor
-    notification.eventable.user
+    notification.eventable.try(:user) || notification.event.user
+  rescue => e
+    raise [e, notification, notification.event].inspect
   end
 
   def title
     notification.eventable.discussion_title
+  rescue => e
+    raise [e, notification, notification.event].inspect
   end
 
   def group_full_name
@@ -57,7 +59,7 @@ class NotificationItem
     actor
   end
 
-  def link
+  def linkable
     raise "link must be overridden by subclass"
   end
 end

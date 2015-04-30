@@ -39,6 +39,9 @@ class Group < ActiveRecord::Base
 
   scope :parents_only, -> { where(parent_id: nil) }
 
+  scope :is_subscription, -> { where(is_commercial: true) }
+  scope :is_donation, -> { where('is_commercial = false or is_commercial IS NULL') }
+
   scope :sort_by_popularity, -> { order('memberships_count DESC') }
 
   scope :visible_to_public, -> { published.where(is_visible_to_public: true) }
@@ -127,6 +130,12 @@ class Group < ActiveRecord::Base
            as: :invitable,
            class_name: 'Invitation'
 
+  has_many :invitations,
+           as: :invitable,
+           class_name: 'Invitation'
+ 
+  has_many :comments, through: :discussions
+
   after_initialize :set_defaults
 
   alias :users :members
@@ -135,6 +144,7 @@ class Group < ActiveRecord::Base
   has_many :admins, through: :admin_memberships, source: :user
   has_many :discussions, dependent: :destroy
   has_many :motions, through: :discussions
+  has_many :votes, through: :motions
 
   belongs_to :parent, class_name: 'Group'
   belongs_to :creator, class_name: 'User'
@@ -407,12 +417,12 @@ class Group < ActiveRecord::Base
     end
   end
 
-  def user_membership_or_request_exists? user
-    Membership.where(:user_id => user, :group_id => self).exists?
-  end
-
   def invitations_remaining
     org_max_size - org_members_count
+  end
+
+  def has_member?(user)
+    memberships.where(user_id: user.id).any?
   end
 
   def has_member_with_email?(email)
@@ -508,10 +518,6 @@ class Group < ActiveRecord::Base
     else
       super
     end
-  end
-
-  def is_referral
-    !group_request.present? and !is_subgroup?
   end
 
   def financial_nature

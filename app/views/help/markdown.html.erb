@@ -1,0 +1,43 @@
+<style>
+td {
+  vertical-align: top;
+}
+</style>
+<table>
+<tr><td>
+<pre id='markdown-src'>
+<%= t(:'.intro.title') %>
+
+<%= t(:'.intro.body') %>
+
+<%= t(:'.headers.body')  %>
+
+<%= t(:'.paragraphs.title') %>
+
+<%= t(:'.paragraphs.body')  %>
+
+<%= t(:'.emphasis.title')  %>
+
+<%= t(:'.emphasis.body')  %>
+
+<%= t(:'.lists.title')  %>
+
+<%= t(:'.lists.body')  %>
+
+<%= t(:'.links.title')  %>
+
+<%= t(:'.links.body')  %>
+
+
+</pre>
+</td>
+<td id='content'>
+</td></tr></table>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+<script>
+  document.getElementById('content').innerHTML = marked(document.getElementById('markdown-src').innerHTML)
+</script>
+
+
+

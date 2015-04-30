@@ -113,7 +113,6 @@ a.btn-icon:hover { color: $dark-grey; }
 .pages.services,
 .pages.terms_of_service,
 .pages.third_parties,
-.pages.try_it,
 .pages.translation,
 .pages.purpose,
 .pages.how_it_works,
@@ -167,23 +166,6 @@ a.btn-icon:hover { color: $dark-grey; }
     }
     .subhead{
       padding-bottom: 24px;
-    }
-    h1{
-      margin-bottom: 5px;
-    }
-    h2{
-      letter-spacing:  -1px;
-      font-size: 30px;
-      line-height: 36px;
-      margin-bottom: 5px;
-    }
-    h2.squish{
-      font-size:28px;
-    }
-    h3{
-      font-size: 20px;
-      line-height: 24px;
-      margin-bottom: 18px;
     }
     .frontpage-text {
       margin-top: 16px;
@@ -577,7 +559,31 @@ body.pages.privacy .container h3.subheader { margin-bottom: 24px; }
     width: 360px;
   }
   select { margin: 8px 0 10px 0; }
-  #direct_contact { margin-top: 101px; }
+  #direct_contact { margin-top: 30px; }
+
+  #faq {
+    margin-top: 50px;
+    h1 {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+    h3 {
+      line-height: 1.2;
+      margin: 1em 0;
+    }
+    p {
+      font-size: 16px;
+      margin-bottom: 1.5em;
+      line-height: 1.4;
+    }
+  }
+  #contact_form {
+    h1 {
+      font-size: 40px;
+      margin-bottom: 20px;
+      margin-top: 25px;
+    }
+  }
 }
 
 body.pages.crowd {
@@ -735,50 +741,6 @@ body.pages.wallets {
   }
 }
 
-body.pages.try_it {
-
-  h1, p, .button-text { font-family: 'Open Sans'; }
-
-  h1 {
-    font-size: 20px;
-    font-weight: 600;
-    color: #797979;
-    text-transform: uppercase;
-  }
-
-  p {
-    font-size: 17px;
-    font-weight: 300;
-    color: $charcoal;
-  }
-
-  section { margin-top: 0; }
-
-  .fa, .join-loomio-community-icon {
-    display: block;
-    float: left;
-  }
-
-  .button-text {
-    margin: 5px 0 0 50px;
-    color: #fff;
-  }
-
-  .btn-try-it {
-    font-size: 22px;
-    font-weight: 300;
-    text-align: left;
-    padding: 30px;
-    margin: 24px 0 4px;
-    width: 100%;
-    white-space: normal;
-
-    .fa-try-it {
-      color: white;
-      font-size: 30px;
-    }
-  }
-}
 body.pages.translation {
   .container h2 { font-size: 1.6em; }
   .twitter-feed-container { padding-left: 16px; }
@@ -879,4 +841,8 @@ body.pages.crowdfunding_celebration {
   .content{
     margin-top: 0;
   }
+}
+
+body.passwords {
+  input { margin-bottom: 15px; }
 }

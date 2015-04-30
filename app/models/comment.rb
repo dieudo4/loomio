@@ -36,12 +36,17 @@ class Comment < ActiveRecord::Base
   delegate :full_name, to: :group, prefix: :group
   delegate :title, to: :discussion, prefix: :discussion
   delegate :locale, to: :user
+  delegate :id, to: :group, prefix: :group
 
   serialize :liker_ids_and_names, Hash
 
   alias_method :author, :user
   alias_method :author=, :user=
   attr_accessor :new_attachment_ids
+
+  def discussion_title
+    discussion.title
+  end
 
   def parent_author
     parent.author if is_reply?
@@ -79,28 +84,13 @@ class Comment < ActiveRecord::Base
     comment_votes.last(max).map(&:user_name)
   end
 
-  def like(user)
-    liker_ids_and_names[user.id] = user.name
-    like = comment_votes.build
-    like.comment = self
-    like.user = user
-    like.save
-    save
-    like
-  end
-
-  def unlike(user)
-    liker_ids_and_names.delete(user.id)
-    comment_votes.where(:user_id => user.id).each(&:destroy)
-    save
-  end
-
-  def refresh_liker_ids_and_names
+  def refresh_liker_ids_and_names!
     hash = {}
-    self.liker_ids_and_names = comment_votes.each do |cv|
+    comment_votes.each do |cv|
       hash[cv.user_id] = cv.user.name
     end
     self.liker_ids_and_names = hash
+    save!
   end
 
   def mentioned_group_members

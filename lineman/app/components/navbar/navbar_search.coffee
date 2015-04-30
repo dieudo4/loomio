@@ -22,6 +22,7 @@ angular.module('loomioApp').directive 'navbarSearch', ->
       $scope.highlighted = index
       _.map highlightables(), (element) -> element.classList.remove("is-active")
       if $scope.highlightedSelection()?
+        $scope.highlightedSelection().firstChild.focus()
         $scope.highlightedSelection().classList.add("is-active")
         # scroll to newly highlighted element?
 
@@ -70,7 +71,7 @@ angular.module('loomioApp').directive 'navbarSearch', ->
           100
 
     $scope.showDropdown = ->
-      $scope.focused && $scope.query.length > 0
+      $scope.focused
 
     $scope.clearAndFocusInput = ->
       $scope.query = ''

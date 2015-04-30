@@ -22,6 +22,10 @@ class ApplicationController < ActionController::Base
   # intercom
   skip_after_filter :intercom_rails_auto_include
 
+  rescue_from ActionView::MissingTemplate do |exception|
+    raise exception unless %w[txt text gif png].include?(params[:format])
+  end
+
   rescue_from CanCan::AccessDenied do |exception|
     if user_signed_in?
       flash[:error] = t("error.access_denied")
@@ -40,6 +44,10 @@ class ApplicationController < ActionController::Base
   end
 
   protected
+  def permitted_params
+    @permitted_params ||= PermittedParams.new(params)
+  end
+
   def using_new_relic?
     ENV['NEW_RELIC_APP_NAME'].present?
   end
@@ -69,7 +77,13 @@ class ApplicationController < ActionController::Base
   end
 
   def store_previous_location
-    session['user_return_to'] = request.env['HTTP_REFERER'] if request.env['HTTP_REFERER'].present?
+    return_to = request.env['HTTP_REFERER']
+
+    if params['return_to']
+      return_to = URI.unescape(params['return_to']).chomp('/')
+    end
+
+    session['user_return_to'] = return_to unless return_to.blank?
   end
 
   def clear_stored_location

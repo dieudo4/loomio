@@ -31,6 +31,15 @@ describe Comment do
       expect(comment.discussion).to receive(:comment_destroyed!)
       comment.destroy
     end
+
+    it "destroys comment votes" do
+      CommentService.like(comment: comment, actor: user)
+      expect(CommentVote.where(comment_id: comment.id,
+                               user_id: user.id).exists?).to be true
+      comment.destroy
+      expect(CommentVote.where(comment_id: comment.id,
+                               user_id: user.id).exists?).to be false
+    end
   end
 
   describe "validate attachments_owned_by_author" do
@@ -39,52 +48,6 @@ describe Comment do
       comment.attachments << attachment
       comment.save
       comment.should have(1).errors_on(:attachments)
-    end
-  end
-
-  context "liked by user" do
-    before do
-      @like = comment.like user
-      comment.reload
-    end
-
-    it "increases like count" do
-      expect(comment.comment_votes.count).to eq 1
-    end
-
-    it "returns a CommentVote object" do
-      expect(@like.class.name).to eq "CommentVote"
-    end
-
-    context "liked again by the same user" do
-      before do
-        comment.like user
-      end
-
-      it "does not increase like count" do
-        expect(comment.comment_votes.count).to eq 1
-      end
-    end
-  end
-
-  context "unliked by user" do
-    before do
-      comment.like user
-      comment.unlike user
-    end
-
-    it "decreases like count" do
-      expect(comment.comment_votes.count).to eq 0
-    end
-
-    context "unliked again by the same user" do
-      before do
-        comment.unlike user
-      end
-
-      it "does not decrease like count" do
-        expect(comment.comment_votes.count).to eq 0
-      end
     end
   end
 

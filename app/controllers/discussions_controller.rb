@@ -27,7 +27,7 @@ class DiscussionsController < GroupBaseController
                                 params: permitted_params.discussion,
                                 actor: current_user)
       current_user.update_attributes(uses_markdown: @discussion.uses_markdown)
-      flash[:notice] = 'Discussion was successfully updated.'
+      flash[:notice] = t("success.discussion_updated")
       redirect_to @discussion
     else
       @user_groups = current_user.groups.order('name')
@@ -54,15 +54,18 @@ class DiscussionsController < GroupBaseController
     redirect_to @discussion.group
   end
 
+  # where is this used?
   def index
+    raise "Is this even used?"
     if params[:group_id].present?
       @group = Group.find(params[:group_id])
       if cannot? :show, @group
         head 401
       else
         @no_discussions_exist = (@group.discussions.count == 0)
-        @discussions = GroupDiscussionsViewer.
-                       for(group: @group, user: current_user).
+        groups = VisibleGroupsQuery.expand(@group)
+        @discussions = Queries::VisibleDiscussions.
+                       new(user: current_user, groups: groups).
                        without_open_motions.
                        order_by_latest_comment.
                        page(params[:page]).per(10)
@@ -71,7 +74,7 @@ class DiscussionsController < GroupBaseController
       authenticate_user!
       @no_discussions_exist = (current_user.discussions.count == 0)
       @discussions = Queries::VisibleDiscussions.
-                     new(user: current_user).
+                     new(user: current_user, groups: current_user.groups).
                      without_open_motions.
                      order_by_latest_comment.
                      page(params[:page]).per(10)

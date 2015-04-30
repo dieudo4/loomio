@@ -1,8 +1,9 @@
 class DashboardController <  GroupBaseController
   include ApplicationHelper
+  after_filter :clear_discussion_index_caches, only: :show
 
   def show
-    @discussions = GroupDiscussionsViewer.for(user: current_user).not_muted
+    @discussions = Queries::VisibleDiscussions.new(groups: current_user.groups, user: current_user).not_muted
 
     if sifting_unread?
       @discussions = @discussions.unread
