@@ -45,23 +45,19 @@ angular.module('loomioApp').controller 'DashboardPageController', ($rootScope, R
     CurrentUser.save()
     @loadMore() if @loadedCount() == 0
 
-  @dashboardOptions = (group) =>
-    unmuted:   true
+  @dashboardOptions = =>
+    muted:     @filter() == 'show_muted'
     unread:    @filter() == 'show_unread'
     proposals: @filter() == 'show_proposals'
-    groupId:   (group.id if group)
 
-  @dashboardDiscussionReaders = (group) =>
-    _.pluck Records.discussionReaders.forDashboard(@dashboardOptions(group)).data(), 'id'
+  @dashboardDiscussionReaders = =>
+    _.pluck Records.discussionReaders.forDashboard(@dashboardOptions()).data(), 'id'
 
-  @dashboardDiscussions = (group) =>
-    Records.discussions.findByDiscussionIds(@dashboardDiscussionReaders(group))
+  @dashboardDiscussions = =>
+    Records.discussions.findByDiscussionIds(@dashboardDiscussionReaders())
                        .simplesort('lastActivityAt', true)
-                       .limit(@loadedCount(group))
+                       .limit(@loadedCount())
                        .data()
-
-  @dashboardGroups = ->
-    _.filter CurrentUser.groups(), (group) -> group.isParent()
 
   timeframe = (options = {}) ->
     today = moment().startOf 'day'
@@ -85,11 +81,6 @@ angular.module('loomioApp').controller 'DashboardPageController', ($rootScope, R
   @anyThisWeek  = inTimeframe(@thisWeek)
   @anyThisMonth = inTimeframe(@thisMonth)
   @anyOlder     = inTimeframe(@older)
-
-  @groupName    = (group) -> group.name
-  @anyThisGroup = (group) => @dashboardDiscussions(group).length > 0
-  @canExpand    = (group) =>
-    @loadedCount(group) < _.min [@dashboardDiscussionReaders(group).length, @groupThreadCounts.expanded]
 
   Records.votes.fetchMyRecentVotes()
   @loadMore()
